@@ -1,0 +1,22 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 40px;
+}
+
+button {
+  font-size: 18px;
+  padding: 12px 25px;
+  margin: 8px;
+  cursor: pointer;
+}
+
+#status {
+  margin-top: 15px;
+  font-weight: bold;
+}
+
+.data {
+  font-size: 22px;
+  margin-top: 20px;
+}
