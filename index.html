@@ -7,17 +7,21 @@
   body {
     font-family: Arial, sans-serif;
     text-align: center;
-    padding: 50px;
+    padding: 40px;
   }
   button {
-    font-size: 20px;
-    padding: 15px 30px;
-    margin: 10px;
+    font-size: 18px;
+    padding: 12px 25px;
+    margin: 8px;
     cursor: pointer;
   }
   #status {
-    margin-top: 20px;
+    margin-top: 15px;
     font-weight: bold;
+  }
+  .data {
+    font-size: 22px;
+    margin-top: 20px;
   }
 </style>
 </head>
@@ -36,8 +40,14 @@
 
 <p id="status">Not connected</p>
 
+<div class="data">
+  GPS Speed: <span id="gps">---</span><br>
+  Calc Speed: <span id="calc">---</span>
+</div>
+
 <script>
 let bleCharacteristic = null;
+let rxBuffer = "";
 
 async function connect() {
   try {
@@ -49,6 +59,12 @@ async function connect() {
     const service = await server.getPrimaryService(0xFFE0);
     bleCharacteristic = await service.getCharacteristic(0xFFE1);
 
+    await bleCharacteristic.startNotifications();
+    bleCharacteristic.addEventListener(
+      'characteristicvaluechanged',
+      handleData
+    );
+
     document.getElementById('status').innerText =
       `Connected to ${device.name || 'HM-10'}`;
   } catch (err) {
@@ -57,14 +73,39 @@ async function connect() {
   }
 }
 
-async function send(command) {
+function handleData(event) {
+  const value = new TextDecoder().decode(event.target.value);
+  rxBuffer += value;
+
+  // Assume messages end with newline \n
+  let lines = rxBuffer.split('\n');
+  rxBuffer = lines.pop();
+
+  for (let line of lines) {
+    parseLine(line.trim());
+  }
+}
+
+function parseLine(line) {
+  if (line.startsWith("D_GPS_SPEED")) {
+    const v = line.split(':')[1];
+    document.getElementById('gps').innerText = v;
+  }
+
+  if (line.startsWith("D_CALC_SPEED")) {
+    const v = line.split(':')[1];
+    document.getElementById('calc').innerText = v;
+  }
+}
+
+async function send(cmd) {
   if (!bleCharacteristic) {
     alert('Not connected!');
     return;
   }
-
-  const data = new TextEncoder().encode(command);
-  await bleCharacteristic.writeValue(data);
+  await bleCharacteristic.writeValue(
+    new TextEncoder().encode(cmd + "\n")
+  );
 }
 </script>
 
