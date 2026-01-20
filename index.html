@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>HM-10 BLE Controller</title>
+<title>Car Control</title>
 <style>
   body {
     font-family: Arial, sans-serif;
@@ -23,15 +23,15 @@
 </head>
 <body>
 
-<h1>HM-10 BLE Controller</h1>
+<h1>Car Control</h1>
 
 <button onclick="connect()">Connect</button>
 
 <div>
-  <button onclick="send('E')">ESTOP</button>
-  <button onclick="send('R')">RESET</button>
-  <button onclick="send('1')">ALARM ON</button>
-  <button onclick="send('0')">ALARM OFF</button>
+  <button onclick="send('ESTOP')">ESTOP</button>
+  <button onclick="send('RESET')">RESET</button>
+  <button onclick="send('A_ON')">ALARM ON</button>
+  <button onclick="send('A_OFF')">ALARM OFF</button>
 </div>
 
 <p id="status">Not connected</p>
@@ -57,13 +57,13 @@ async function connect() {
   }
 }
 
-async function send(val) {
+async function send(command) {
   if (!bleCharacteristic) {
     alert('Not connected!');
     return;
   }
 
-  const data = new TextEncoder().encode(val);
+  const data = new TextEncoder().encode(command);
   await bleCharacteristic.writeValue(data);
 }
 </script>
