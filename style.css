@@ -2,21 +2,28 @@ body {
   font-family: Arial, sans-serif;
   text-align: center;
   padding: 40px;
+  color: white;
+  background-color: #000000;
 }
 
 button {
-  font-size: 18px;
-  padding: 12px 25px;
-  margin: 8px;
+  background-color: #091675;
+  border: none;
+  color: white;
+  padding: 15px 30px;
+  font-size: 16px;
   cursor: pointer;
+  margin: 4px 2px;
 }
 
 #status {
   margin-top: 15px;
   font-weight: bold;
+  color: white;
 }
 
 .data {
   font-size: 22px;
   margin-top: 20px;
+  color: white;
 }
