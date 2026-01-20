@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>HM-10 BLE Controller</title>
+<style>
+  body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+  button {
+    font-size: 20px;
+    padding: 15px 30px;
+    margin: 10px;
+    cursor: pointer;
+  }
+  #status { margin-top: 20px; font-weight: bold; }
+</style>
+</head>
+<body>
+
+<h1>HM-10 BLE Controller</h1>
+
+<button onclick="connect()">Connect</button>
+<div>
+  <button onclick="send('A')">Button 1</button>
+  <button onclick="send('B')">Button 2</button>
+  <button onclick="send('C')">Button 3</button>
+  <button onclick="send('D')">Button 4</button>
+</div>
+
+<p id="status">Not connected</p>
+
+<script>
+let bleCharacteristic;
+
+async function connect() {
+  try {
+    const device = await navigator.bluetooth.requestDevice({
+      filters: [{ services: [0xFFE0] }]  // HM-10 default service
+    });
+
+    const server = await device.gatt.connect();
+    const service = await server.getPrimaryService(0xFFE0);
+    bleCharacteristic = await service.getCharacteristic(0xFFE1);
+
+    document.getElementById('status').innerText = Connected to ${device.name};
+  } catch (err) {
+    document.getElementById('status').innerText = 'Connection failed';
+    console.error(err);
+  }
+}
+
+async function send(val) {
+  if (!bleCharacteristic) {
+    alert('Not connected!');
+    return;
+  }
+  const data = new TextEncoder().encode(val);
+  await bleCharacteristic.writeValue(data);
+}
+</script>
+
+</body>
+</html>
